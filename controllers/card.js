@@ -32,8 +32,6 @@ module.exports.deleteCardById = (req, res) => {
     .catch((error) => {
       if (error.name === 'CastError') {
         res.status(400).send({ message: 'Переданы некорректные данные для удаления карточки.' });
-      } else if (error.name === 'DocumentNotFoundError') {
-        res.status(404).send({ message: 'Пользователь с укзаанным id не найден' });
       } else {
         res.status(500).send({ message: 'Произошла ошибка' });
       }
@@ -59,7 +57,7 @@ module.exports.putLikeCard = (req, res) => {
 };
 
 module.exports.deleteLikeCard = (req, res) => {
-  Card.findByIdAndRemove(
+  Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
     { new: true },
