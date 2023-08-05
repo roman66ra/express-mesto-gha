@@ -12,7 +12,6 @@ module.exports.getCards = (req, res) => {
 
 module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
-  // eslint-disable-next-line no-underscore-dangle
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.status(201).send({ data: card }))
     .catch((error) => {
@@ -29,7 +28,6 @@ module.exports.deleteCardById = (req, res) => {
 };
 
 module.exports.putLikeCard = (req, res) => {
-  // eslint-disable-next-line no-underscore-dangle
   Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
     .populate(['owner', 'likes'])
     .then((card) => {
