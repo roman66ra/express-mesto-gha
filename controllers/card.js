@@ -31,13 +31,14 @@ module.exports.putLikeCard = (req, res) => {
   Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
     .populate(['owner', 'likes'])
     .then((card) => {
-      res.send(card);
+      if (!card) {
+        return res.status(404).send({ message: 'Передан несуществующий _id карточки.' });
+      }
+      return res.send(card);
     })
     .catch((error) => {
       if (error.name === 'CastError') {
-        res.status(400).send({ message: 'Переданы некорректные данные для снятии лайка.' });
-      } else if (error.name === 'DocumentNotFoundError') {
-        res.status(404).send({ message: 'Передан несуществующий _id карточки.' });
+        res.status(400).send({ message: 'Переданы некорректные данные для постановки  лайка.' });
       } else {
         res.status(500).send({ message: 'Произошла ошибка' });
       }
@@ -47,13 +48,14 @@ module.exports.putLikeCard = (req, res) => {
 module.exports.deleteLikeCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
-      res.send(card);
+      if (!card) {
+        return res.status(404).send({ message: 'Передан несуществующий _id карточки.' });
+      }
+      return res.send(card);
     })
     .catch((error) => {
       if (error.name === 'CastError') {
-        res.status(400).send({ message: 'Переданы некорректные данные для постановки лайка.' });
-      } else if (error.name === 'DocumentNotFoundError') {
-        res.status(404).send({ message: 'Передан несуществующий _id карточки.' });
+        res.status(400).send({ message: 'Переданы некорректные данные для снятии лайка.' });
       } else {
         res.status(500).send({ message: 'Произошла ошибка' });
       }

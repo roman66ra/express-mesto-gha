@@ -27,7 +27,6 @@ module.exports.getUserById = (req, res) => {
       return res.status(200).send(user);
     })
     .catch((error) => {
-      console.log(error)
       if (error.name === 'CastError') {
         res.status(400).send({ message: 'Передан некорректный ID' });
       } else {
