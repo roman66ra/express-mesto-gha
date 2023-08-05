@@ -20,6 +20,10 @@ app.use((req, res, next) => {
 app.use('/', require('./routes/user'));
 app.use('/', require('./routes/card'));
 
+app.use((req, res) => {
+  res.status(404).send('Sorry cant find that!');
+});
+
 app.listen(3000, () => {
   console.log('Example app listening on port 3000');
 });
