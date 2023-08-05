@@ -23,6 +23,7 @@ module.exports.createCard = (req, res) => {
 
 module.exports.deleteCardById = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
+    .orFail()
     .then((card) => { res.send(card); })
     .catch((error) => {
       if (error.name === 'CastError') {
@@ -38,6 +39,7 @@ module.exports.deleteCardById = (req, res) => {
 module.exports.putLikeCard = (req, res) => {
   Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
     .populate(['owner', 'likes'])
+    .orFail()
     .then((card) => { res.send(card); })
     .catch((error) => {
       if (error.name === 'CastError') {
@@ -56,6 +58,7 @@ module.exports.deleteLikeCard = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
+    .orFail()
     .then((card) => { res.send(card); })
     .catch((error) => {
       if (error.name === 'CastError') {
