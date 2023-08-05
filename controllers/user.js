@@ -21,11 +21,15 @@ module.exports.postUser = (req, res) => {
 module.exports.getUserById = (req, res) => {
   User.findById(req.params.userId)
     .then((user) => {
-      res.status(200).send(user);
+      if (!user) {
+        return res.status(404).send({ message: 'Пользователь с укзаанным id не найден' });
+      }
+      return res.status(200).send(user);
     })
     .catch((error) => {
-      if (error.name === 'DocumentNotFoundError') {
-        res.status(404).send({ message: 'Пользователь с укзаанным id не найден' });
+      console.log(error)
+      if (error.name === 'CastError') {
+        res.status(400).send({ message: 'Передан некорректный ID' });
       } else {
         res.status(500).send('Произошла ошибка');
       }
