@@ -20,15 +20,13 @@ module.exports.postUser = (req, res) => {
 
 module.exports.getUserById = (req, res) => {
   User.findById(req.params.userId)
-    .then((user) => {
-      if (!user) {
-        return res.status(404).send({ message: 'Пользователь с укзаанным id не найден' });
-      }
-      return res.status(200).send(user);
-    })
+    .orFail()
+    .then((user) => { res.status(200).send(user); })
     .catch((error) => {
       if (error.name === 'CastError') {
         res.status(400).send({ message: 'Передан некорректный ID' });
+      } else if (error.name === 'DocumentNotFoundError') {
+        res.status(404).send({ message: 'Пользователь с укзаанным id не найден' });
       } else {
         res.status(500).send('Произошла ошибка');
       }
@@ -39,6 +37,7 @@ module.exports.patchProfile = (req, res) => {
   const { name, about } = req.body;
   if (req.user._id) {
     User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
+      .orFail()
       .then((user) => res.send(user))
       .catch((error) => {
         if (error.name === 'ValidationError') {
@@ -59,6 +58,7 @@ module.exports.patchAvatar = (req, res) => {
       { avatar: req.body.avatar },
       { new: true, runValidators: true },
     )
+      .orFail()
       .then((user) => res.send(user))
       .catch(((error) => {
         if (error.name === 'ValidationError') {
