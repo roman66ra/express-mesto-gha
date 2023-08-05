@@ -46,7 +46,11 @@ module.exports.putLikeCard = (req, res) => {
 };
 
 module.exports.deleteLikeCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId)
+  Card.findByIdAndRemove(
+    req.params.cardId,
+    { $pull: { likes: req.user._id } },
+    { new: true },
+  )
     .then((card) => {
       if (!card) {
         return res.status(404).send({ message: 'Передан несуществующий _id карточки.' });
