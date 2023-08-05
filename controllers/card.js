@@ -11,7 +11,7 @@ module.exports.getCards = (req, res) => {
 };
 
 module.exports.createCard = (req, res) => {
-  const { name, link} = req.body;
+  const { name, link } = req.body;
   // eslint-disable-next-line no-underscore-dangle
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.status(201).send({ data: card }))
