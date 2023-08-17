@@ -19,9 +19,8 @@ module.exports.postUser = (req, res) => {
     }))
     .then((user) => res.status(201).send({ data: user }))
     .catch((error) => {
-      console.log(error);
       if (error.name === 'ValidationError') {
-        res.status(400).send({ message: error.message });
+        res.status(400).send({ message: 'Введены некорректные данные' });
       } else { res.status(500).send({ message: 'Ошибка при создании карточки' }); }
     });
 };
