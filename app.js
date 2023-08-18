@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
-const { celebrate, Joi } = require('celebrate');
+const { celebrate, Joi, errors } = require('celebrate');
 
 const { login, postUser } = require('./controllers/user');
 const auth = require('./middlewares/auth');
@@ -23,14 +23,15 @@ app.post('/signin', celebrate({
     avatar: Joi.string().pattern(/^(http|https|ftp):\/\/(([A-Z0-9][A-Z0-9_-]*)(\.[A-Z0-9][A-Z0-9_-]*)+)/i),
     email: Joi.string().required().email(),
     password: Joi.string().required().min(3),
-  }),
+  }).unknown(true),
 }), login);
+
 app.post('/signup', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
     avatar: Joi.string().pattern(/^(http|https|ftp):\/\/(([A-Z0-9][A-Z0-9_-]*)(\.[A-Z0-9][A-Z0-9_-]*)+)/i),
-    email: Joi.string().required().email(),
+    email: Joi.string().required().pattern(/^[^ ]+@[^ ]+\.[a-z]{2,3}$/),
     password: Joi.string().required().min(3),
   }),
 }), postUser);
@@ -42,15 +43,14 @@ app.use((req, res) => {
   res.status(404).send({ message: 'Sorry cant find that!' });
 });
 
+app.use(errors());
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
-  res
-    .status(statusCode)
-    .send({
-      message: statusCode === 500
-        ? 'На сервере произошла ошибка'
-        : message,
-    });
+  res.status(statusCode).send({
+    message: statusCode === 500
+      ? 'На сервере произошла ошибка'
+      : message,
+  });
   next();
 });
 
