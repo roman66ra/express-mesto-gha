@@ -26,7 +26,6 @@ module.exports.postUser = (req, res, next) => {
       name: user.name, about: user.about, avatar: user.avatar, _id: user._id, email: user.email,
     }))
     .catch((error) => {
-      console.log(error);
       if (error instanceof mongoose.Error.ValidationError) {
         next(new BadRequestError(error.message));
       } else if (error.code === 11000) {
