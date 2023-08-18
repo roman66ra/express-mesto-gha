@@ -18,11 +18,8 @@ app.use(bodyParser.json());
 
 app.post('/signin', celebrate({
   body: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
-    about: Joi.string().min(2).max(30),
-    avatar: Joi.string().pattern(/^(http|https|ftp):\/\/(([A-Z0-9][A-Z0-9_-]*)(\.[A-Z0-9][A-Z0-9_-]*)+)/i),
-    email: Joi.string().required().email(),
-    password: Joi.string().required().min(3),
+    email: Joi.string().required().pattern(/^[^ ]+@[^ ]+\.[a-z]{2,3}$/),
+    password: Joi.string().required().min(2),
   }).unknown(true),
 }), login);
 
@@ -32,15 +29,15 @@ app.post('/signup', celebrate({
     about: Joi.string().min(2).max(30),
     avatar: Joi.string().pattern(/^(http|https|ftp):\/\/(([A-Z0-9][A-Z0-9_-]*)(\.[A-Z0-9][A-Z0-9_-]*)+)/i),
     email: Joi.string().required().pattern(/^[^ ]+@[^ ]+\.[a-z]{2,3}$/),
-    password: Joi.string().required().min(3),
-  }),
+    password: Joi.string().required().min(2),
+  }).unknown(true),
 }), postUser);
 
 app.use('/', auth, require('./routes/user'));
 app.use('/', auth, require('./routes/card'));
 
 app.use((req, res) => {
-  res.status(404).send({ message: 'Sorry cant find that!' });
+  res.status(404).send({ message: 'Страница не найдена' });
 });
 
 app.use(errors());
