@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
+const { celebrate, Joi } = require('celebrate');
 
 const { login, postUser } = require('./controllers/user');
 const auth = require('./middlewares/auth');
@@ -15,8 +16,24 @@ mongoose.connect(DB_URL, {
 
 app.use(bodyParser.json());
 
-app.post('/signin', login);
-app.post('/signup', postUser);
+app.post('/signin', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+    avatar: Joi.string().pattern(/^(http|https|ftp):\/\/(([A-Z0-9][A-Z0-9_-]*)(\.[A-Z0-9][A-Z0-9_-]*)+)/i),
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(3),
+  }),
+}), login);
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+    avatar: Joi.string().pattern(/^(http|https|ftp):\/\/(([A-Z0-9][A-Z0-9_-]*)(\.[A-Z0-9][A-Z0-9_-]*)+)/i),
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(3),
+  }),
+}), postUser);
 
 app.use('/', auth, require('./routes/user'));
 app.use('/', auth, require('./routes/card'));
