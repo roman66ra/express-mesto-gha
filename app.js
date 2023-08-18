@@ -37,6 +37,7 @@ app.use('/', auth, require('./routes/user'));
 app.use('/', auth, require('./routes/card'));
 
 app.use(errors());
+
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
   res.status(statusCode).send({

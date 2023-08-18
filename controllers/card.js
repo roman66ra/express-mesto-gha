@@ -55,6 +55,13 @@ module.exports.deleteCardById = (req, res, next) => {
             next(error);
           }
         });
+    })
+    .catch((err) => {
+      if (err.name === 'TypeError') {
+        next(new NotFoundError('Карточка с указанным id не найдена'));
+      } else {
+        next(err);
+      }
     });
 };
 
