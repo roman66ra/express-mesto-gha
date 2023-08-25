@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
 const { celebrate, Joi, errors } = require('celebrate');
-
 const rateLimit = require('express-rate-limit');
+const errorHandler = require('./middlewares/error-handler');
 
 const { login, postUser } = require('./controllers/user');
 const auth = require('./middlewares/auth');
@@ -54,14 +54,6 @@ app.use((req, res, next) => {
   next(new NotFoundError('Страница не найдена'));
 });
 
-app.use((err, req, res, next) => {
-  const { statusCode = 500, message } = err;
-  res.status(statusCode).send({
-    message: statusCode === 500
-      ? 'На сервере произошла ошибка'
-      : message,
-  });
-  next();
-});
+app.use(errorHandler);
 
 app.listen(PORT);
